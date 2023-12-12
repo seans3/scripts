@@ -2,4 +2,4 @@
 
 Helper scripts including
 
-1. ws-restart: kind cluster build and restart
+1. cluster-restart: kind cluster build and restart
