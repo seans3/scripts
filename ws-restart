@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+#################################################
+#
+# Name:   ws-restart
+# Author: Sean Sullivan
+# Date:   May 15, 2023
+# Description:
+#   Restart the kind cluster named <IMAGE_NAME>
+# The script performs the following actions on
+# the kind cluster:
+#   1) Delete the current cluster
+#   2) Build a new control plane image using code
+#   rooted in the <KUBE_BASE_DIR> directory.
+#   3) Start a kind cluster using the built
+#   control plane.
+#   4) Apply a basic nginx deployment.
+#
+#################################################
+
+set +x                                                                                                                                                       set +e
+
+# Name of the kind cluster.
+IMAGE_NAME=sean-dev
+# Full image name for the kind cluster.
+FULL_IMAGE_NAME="kindest/node:${IMAGE_NAME}"
+# Root for kubernetes code base.
+KUBE_BASE_DIR="${HOME}/go/src/k8s.io/kubernetes"
+SLEEP_SECONDS=20
+
+# Move go.work files out of the way, because they may interfere
+# with the build. These go.work files are used for emacs lsp.
+mv ${KUBE_BASE_DIR}/go.work* ~
+
+# If a cluster exists with the name ${IMAGE_NAME}, delete it.
+kind delete cluster --name ${IMAGE_NAME}
+
+# Build the kind control plane from code in ${KUBE_BASE_DIR}
+kind build node-image -v=7 --image ${FULL_IMAGE_NAME} ${KUBE_BASE_DIR}
+
+# Create a kind cluster based on the previously built control plane.
+# Use "config.yaml" as configuration for the cluster (including
+# feature flags).
+sleep ${SLEEP_SECONDS}
+kind create cluster -v=7 --config ${KUBE_BASE_DIR}/config.yaml --name ${IMAGE_NAME} --image ${FULL_IMAGE_NAME}
+
+sleep ${SLEEP_SECONDS}
+
+# Apply a basic nginx deployment.
+kubectl apply -f ~/nginx.yaml
+
+# Return the go.work files (used for emacs lsp).
+mv ~/go.work* ${KUBE_BASE_DIR}
