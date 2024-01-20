@@ -18,7 +18,8 @@
 #
 #################################################
 
-set +x                                                                                                                                                       set +e
+set +x
+set +e
 
 # Name of the kind cluster.
 IMAGE_NAME=sean-dev
@@ -26,6 +27,9 @@ IMAGE_NAME=sean-dev
 FULL_IMAGE_NAME="kindest/node:${IMAGE_NAME}"
 # Root for kubernetes code base.
 KUBE_BASE_DIR="${HOME}/go/src/k8s.io/kubernetes"
+# Root for data directy
+DATA_DIR="${HOME}/data"
+
 SLEEP_SECONDS=20
 
 # Move go.work files out of the way, because they may interfere
@@ -36,13 +40,13 @@ mv ${KUBE_BASE_DIR}/go.work* ~
 kind delete cluster --name ${IMAGE_NAME}
 
 # Build the kind control plane from code in ${KUBE_BASE_DIR}
-kind build node-image -v=7 --image ${FULL_IMAGE_NAME} ${KUBE_BASE_DIR}
+kind build node-image --image ${FULL_IMAGE_NAME} ${KUBE_BASE_DIR}
 
 # Create a kind cluster based on the previously built control plane.
 # Use "config.yaml" as configuration for the cluster (including
 # feature flags).
 sleep ${SLEEP_SECONDS}
-kind create cluster -v=7 --config ${KUBE_BASE_DIR}/config.yaml --name ${IMAGE_NAME} --image ${FULL_IMAGE_NAME}
+kind create cluster --config ${DATA_DIR}/cluster-config.yaml --name ${IMAGE_NAME} --image ${FULL_IMAGE_NAME}
 
 sleep ${SLEEP_SECONDS}
 
