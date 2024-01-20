@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+#################################################
+#
+# Name:   ws-portforward-test
+# Author: Sean Sullivan
+# Date:   Jan. 16, 2024
+# Description:
+#   1) Start kubectl port-forward command
+#   2) Run port-forward requests using local ports
+#
+#################################################
+
+NUM_PORT_FORWARDS=100
+
+LOCAL_PORT_1=8080
+REMOTE_PORT_1=80
+
+LOCAL_PORT_2=8000
+REMOTE_PORT_2=80
+
+
+GOLDEN_FILE_1="${HOME}/data/nginx/index.html"
+
+set +x
+set +e
+
+# kubectl port-forward -v=4 nginx ${LOCAL_PORT_1}:${REMOTE_PORT_1} ${LOCAL_PORT_2}:${REMOTE_PORT_2}
+
+temp_dir=`mktemp -d`
+echo "Starting port forward test: ${LOCAL_PORT_1}:${REMOTE_PORT_1} ${LOCAL_PORT_2}:${REMOTE_PORT_2}"
+echo
+echo "Temp Dir: $temp_dir"
+echo
+
+for (( i=1 ; i<=$NUM_PORT_FORWARDS ; i++ )); 
+do
+    # Print progress
+    if [ $(expr $i % 10) -eq 0 ];
+    then
+	echo "$i"
+    else
+	echo -n "."
+    fi
+    output_1=${temp_dir}/$i-result-${LOCAL_PORT_1}.txt
+    output_2=${temp_dir}/$i-result-${LOCAL_PORT_2}.txt
+    # Port forward request to local ports, redirecting output to temp files.
+    curl -s http://localhost:${LOCAL_PORT_1}/index.html > ${output_1}
+    curl -s http://localhost:${LOCAL_PORT_2}/index.html > ${output_2}
+    # Validate the output files are valid.
+    diff -q ${output_1} ${GOLDEN_FILE_1}
+    diff -q ${output_2} ${GOLDEN_FILE_1}
+    # Clean up
+    rm -f ${output_1}
+    rm -f ${output_2}
+done
+
+rmdir ${temp_dir}
