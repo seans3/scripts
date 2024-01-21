@@ -28,7 +28,8 @@ FULL_IMAGE_NAME="kindest/node:${IMAGE_NAME}"
 # Root for kubernetes code base.
 KUBE_BASE_DIR="${HOME}/go/src/k8s.io/kubernetes"
 # Root for data directy
-DATA_DIR="${HOME}/data"
+DATA_DIR="./data"
+NGINX_DIR="${DATA_DIR}/nginx"
 
 SLEEP_SECONDS=20
 
@@ -50,8 +51,10 @@ kind create cluster --config ${DATA_DIR}/cluster-config.yaml --name ${IMAGE_NAME
 
 sleep ${SLEEP_SECONDS}
 
-# Apply a basic nginx deployment.
-kubectl apply -f ~/nginx.yaml
+# Apply a basic nginx deployment to serve html files.
+kubectl create configmap nginx-html-files --from-file=${NGINX_DIR}/html-files
+sleep 2
+kubectl apply -f ${NGINX_DIR}/nginx.yaml
 
 # Return the go.work files (used for emacs lsp).
 mv ~/go.work* ${KUBE_BASE_DIR}
