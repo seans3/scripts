@@ -22,6 +22,8 @@ REMOTE_PORT_2=80
 DATA_DIR="./data"
 NGINX_DIR="${DATA_DIR}/nginx"
 GOLDEN_FILE_1="${NGINX_DIR}/html-files/index.html"
+GOLDEN_FILE_2="${NGINX_DIR}/html-files/basic-file.html"
+GOLDEN_FILE_3="${NGINX_DIR}/html-files/basic-large.html"
 
 set +x
 set +e
@@ -45,15 +47,23 @@ do
     fi
     output_1=${temp_dir}/$i-result-${LOCAL_PORT_1}.txt
     output_2=${temp_dir}/$i-result-${LOCAL_PORT_2}.txt
+    output_3=${temp_dir}/$i-result-${LOCAL_PORT_1}-basic.txt
+    output_4=${temp_dir}/$i-result-${LOCAL_PORT_2}-large.txt
     # Port forward request to local ports, redirecting output to temp files.
     curl -s http://localhost:${LOCAL_PORT_1}/index.html > ${output_1}
     curl -s http://localhost:${LOCAL_PORT_2}/index.html > ${output_2}
+    curl -s http://localhost:${LOCAL_PORT_1}/basic-file.html > ${output_3}
+    curl -s http://localhost:${LOCAL_PORT_2}/basic-large.html > ${output_4}
     # Validate the output files are valid.
     diff -q ${output_1} ${GOLDEN_FILE_1}
     diff -q ${output_2} ${GOLDEN_FILE_1}
+    diff -q ${output_3} ${GOLDEN_FILE_2}
+    diff -q ${output_4} ${GOLDEN_FILE_3}
     # Clean up
     rm -f ${output_1}
     rm -f ${output_2}
+    rm -f ${output_3}
+    rm -f ${output_4}
 done
 
 rmdir ${temp_dir}
