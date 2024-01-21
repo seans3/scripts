@@ -19,8 +19,9 @@ REMOTE_PORT_1=80
 LOCAL_PORT_2=8000
 REMOTE_PORT_2=80
 
-
-GOLDEN_FILE_1="${HOME}/data/nginx/index.html"
+DATA_DIR="./data"
+NGINX_DIR="${DATA_DIR}/nginx"
+GOLDEN_FILE_1="${NGINX_DIR}/html-files/index.html"
 
 set +x
 set +e
