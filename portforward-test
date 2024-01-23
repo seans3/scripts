@@ -11,7 +11,8 @@
 #
 #################################################
 
-NUM_PORT_FORWARDS=100
+# Number of port-forward request loops; 100 is default.
+NUM_PORT_FORWARDS=${1:-100}
 
 LOCAL_PORT_1=8080
 REMOTE_PORT_1=80
@@ -28,7 +29,10 @@ GOLDEN_FILE_3="${NGINX_DIR}/html-files/basic-large.html"
 set +x
 set +e
 
-# kubectl port-forward -v=4 nginx ${LOCAL_PORT_1}:${REMOTE_PORT_1} ${LOCAL_PORT_2}:${REMOTE_PORT_2}
+# The following command should have been run in another terminal to create
+# the upgraded websocket and spdy connections.
+#
+# $ kubectl port-forward -v=4 nginx ${LOCAL_PORT_1}:${REMOTE_PORT_1} ${LOCAL_PORT_2}:${REMOTE_PORT_2}
 
 temp_dir=`mktemp -d`
 echo "Starting port forward test: ${LOCAL_PORT_1}:${REMOTE_PORT_1} ${LOCAL_PORT_2}:${REMOTE_PORT_2}"
