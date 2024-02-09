@@ -42,6 +42,8 @@ echo "Temp Dir: $temp_dir"
 echo "Errors Dir: $errors_dir"
 echo
 
+# Counters keeping track of subrequests and errors.
+numRequests=0
 numErrors=0
 for (( i=1 ; i<=$NUM_PORT_FORWARDS ; i++ )); 
 do
@@ -67,6 +69,8 @@ do
     then
 	mv ${output_1} ${errors_dir}
 	((numErrors++))
+    else
+	((numRequests++))
     fi
 
     diff -q ${output_2} ${GOLDEN_FILE_1}
@@ -74,6 +78,8 @@ do
     then
 	mv ${output_2} ${errors_dir}
 	((numErrors++))
+    else
+	((numRequests++))
     fi
 
     diff -q ${output_3} ${GOLDEN_FILE_2}
@@ -81,6 +87,8 @@ do
     then
 	mv ${output_3} ${errors_dir}
 	((numErrors++))
+    else
+	((numRequests++))
     fi
 
     diff -q ${output_4} ${GOLDEN_FILE_3}
@@ -88,6 +96,8 @@ do
     then
 	mv ${output_4} ${errors_dir}
 	((numErrors++))
+    else
+	((numRequests++))
     fi
 
     # Clean up
@@ -97,6 +107,7 @@ do
     rm -f ${output_4}
 done
 echo
+echo "Num Requests: ${numRequests}"
 echo "Num Errors: ${numErrors}"
 echo
 echo "Cleaning up..."
