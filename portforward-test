@@ -101,5 +101,10 @@ echo "Num Errors: ${numErrors}"
 echo
 echo "Cleaning up..."
 rmdir ${temp_dir}
+# Remove errors directory if there are no errors.
+if [ $numErrors -eq 0 ];
+then
+    rmdir ${errors_dir}
+fi
 echo
 echo "Finished"
