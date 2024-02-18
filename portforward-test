@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#################################################
+#######################################################
 #
 # Name:   portforward-test
 # Author: Sean Sullivan
@@ -8,8 +8,29 @@
 # Description:
 #   Each iteration loop issues four port-forward
 #   requests.
+#     1) request local_port1 (8080) index.html
+#     2) request local_port2 (8000) index.html
+#     3) request local_port1 (8080) basic-file.html
+#     4) request local_port2 (8000) basic-large.html
 #
-#################################################
+#   The large html file is ~620KB.
+#
+# Prerequisites:
+#   1) nginx must be running in the cluster.
+#   2) A kubectl port-forward command must be issued in
+#   another terminal to create the connection to the
+#   nginx container before running this test.
+#
+#   The following listens on two local ports (8080 and 8000),
+#   forwarding requests to port 80 on the nginx container.
+#
+#   $ kubectl port-forward nginx 8080:80 8000:80
+#
+# Usage:
+#   # 1000 iterations (= 4000 curl requests).
+#   portforward-test 1000
+#
+#######################################################
 
 # Number of port-forward request loops; 100 is default.
 NUM_PORT_FORWARDS=${1:-100}
