@@ -2,12 +2,12 @@
 #
 #################################################
 #
-# Name:   ws-portforward-test
+# Name:   portforward-test
 # Author: Sean Sullivan
 # Date:   Jan. 16, 2024
 # Description:
-#   1) Start kubectl port-forward command
-#   2) Run port-forward requests using local ports
+#   Each iteration loop issues four port-forward
+#   requests.
 #
 #################################################
 
@@ -19,6 +19,10 @@ REMOTE_PORT_1=80
 
 LOCAL_PORT_2=8000
 REMOTE_PORT_2=80
+
+#POST_DATA_FILE="@data/post-64kb.dat"
+#POST_DATA_FILE="@data/post-1mb.dat"
+POST_DATA_FILE="@data/post-5mb.dat"
 
 DATA_DIR="./data"
 NGINX_DIR="${DATA_DIR}/nginx"
@@ -59,10 +63,11 @@ do
     output_3=${temp_dir}/$i-result-${LOCAL_PORT_1}-basic.txt
     output_4=${temp_dir}/$i-result-${LOCAL_PORT_2}-large.txt
     # Port forward request to local ports, redirecting output to temp files.
-    curl -s http://localhost:${LOCAL_PORT_1}/index.html > ${output_1}
-    curl -s http://localhost:${LOCAL_PORT_2}/index.html > ${output_2}
-    curl -s http://localhost:${LOCAL_PORT_1}/basic-file.html > ${output_3}
-    curl -s http://localhost:${LOCAL_PORT_2}/basic-large.html > ${output_4}
+    curl -X POST -d ${POST_DATA_FILE} -s http://localhost:${LOCAL_PORT_1}/index.html > ${output_1}
+    curl -X POST -d ${POST_DATA_FILE} -s http://localhost:${LOCAL_PORT_2}/index.html > ${output_2}
+    curl -X POST -d ${POST_DATA_FILE} -s http://localhost:${LOCAL_PORT_1}/basic-file.html > ${output_3}
+    curl -X POST -d ${POST_DATA_FILE} -s http://localhost:${LOCAL_PORT_2}/basic-large.html > ${output_4}
+
     # Validate the output files are valid.
     diff -q ${output_1} ${GOLDEN_FILE_1}
     if [ $? -ne 0 ];
