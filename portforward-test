@@ -84,9 +84,10 @@ do
     output_3=${temp_dir}/$i-result-${LOCAL_PORT_1}-basic.txt
     output_4=${temp_dir}/$i-result-${LOCAL_PORT_2}-large.txt
     # Port forward request to local ports, redirecting output to temp files.
-    curl -X POST -d ${POST_DATA_FILE} -s http://localhost:${LOCAL_PORT_1}/index.html > ${output_1}
-    curl -X POST -d ${POST_DATA_FILE} -s http://localhost:${LOCAL_PORT_2}/index.html > ${output_2}
-    curl -X POST -d ${POST_DATA_FILE} -s http://localhost:${LOCAL_PORT_1}/basic-file.html > ${output_3}
+    curl -X POST -s http://localhost:${LOCAL_PORT_1}/index.html > ${output_1}
+    curl -X POST -s http://localhost:${LOCAL_PORT_2}/index.html > ${output_2}
+    curl -X POST -s http://localhost:${LOCAL_PORT_1}/basic-file.html > ${output_3}
+    # Sends an http body within this request in POST_DATA_FILE.
     curl -X POST -d ${POST_DATA_FILE} -s http://localhost:${LOCAL_PORT_2}/basic-large.html > ${output_4}
 
     # Validate the output files are valid.
